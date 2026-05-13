@@ -6,3 +6,8 @@ datasets/
 runs/
 node_modules/
 .env
+frontend/dist/
+backend/uploads/
+ihlaller/
+*.log
+.codex-run/

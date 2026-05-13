@@ -1,0 +1,4 @@
+opencv-python
+ultralytics
+yt-dlp
+imageio-ffmpeg

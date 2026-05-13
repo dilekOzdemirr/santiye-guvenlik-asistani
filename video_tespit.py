@@ -9,6 +9,7 @@ import os
 import time
 from datetime import datetime
 from ultralytics import YOLO
+from api_client import ihlal_gonder
 
 # İhlal tespitlerinin kaydedileceği dizinin kontrolü ve oluşturulması
 if not os.path.exists("ihlaller"):
@@ -17,10 +18,10 @@ if not os.path.exists("ihlaller"):
 print("Yapay zeka modelleri belleğe yükleniyor...")
 
 # 1. Aşama: İnsan tespiti için önceden eğitilmiş temel model (COCO veri seti)
-insan_modeli = YOLO("yolov8n.pt") 
+insan_modeli = YOLO(os.getenv("INSAN_MODEL_PATH", "yolov8n.pt"))
 
 # 2. Aşama: Baret ve yelek tespiti için özel eğitilmiş model
-ekipman_modeli = YOLO("santiye_modeli.pt")
+ekipman_modeli = YOLO(os.getenv("EKIPMAN_MODEL_PATH", "santiye_modeli.pt"))
 
 print("Modeller hazır. Video analizi başlatılıyor...")
 
@@ -95,6 +96,14 @@ while True:
                     dosya_adi = f"ihlaller/ihlal_{zaman}.jpg"
                     cv2.imwrite(dosya_adi, frame)
                     print(f"DIKKAT: İhlal tespit edildi. Kayıt: {dosya_adi}")
+                    ihlal_gonder(
+                        ihlal_turu=", ".join(eksikler),
+                        fotograf_yolu=dosya_adi,
+                        baret_var_mi=baret_var_mi,
+                        yelek_var_mi=yelek_var_mi,
+                        bbox={"x1": x1, "y1": y1, "x2": x2, "y2": y2},
+                        kaynak="video",
+                    )
                     son_fotograf_zamani = su_an
 
     # İşlenmiş görüntünün ekrana yansıtılması
